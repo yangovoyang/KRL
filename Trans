@@ -1,0 +1,51 @@
+def compare_head(list):
+    copy_list = list.copy()
+    for i in range(len(copy_list)-1):
+        for j in range(i,len(copy_list)-i-1):
+            if (copy_list[j][0] > copy_list[j+1][0]) or \
+                    (copy_list[j][0] == copy_list[j+1][0] and copy_list[j][1] > copy_list[j+1][1]) or \
+                    (copy_list[j][0] == copy_list[j+1][0] and copy_list[j][1] == copy_list[j+1][1] and copy_list[j][2] > copy_list[j+1][2]):
+                copy_list[j], copy_list[j+1] = copy_list[j+1], copy_list[j]
+    return copy_list
+
+
+if __name__ == '__main__':
+    # parameters
+    dataset_path = "benchmarks/heart/"  # in_path
+    test_link_prediction = True
+    test_triple_classification = True
+    train_times = 1000
+    n_batches = 100
+    learning_rate = 0.001
+    margin = 1
+    unif_bern = 0
+    entity_neg_rate = 1
+    relation_neg_rate = 0
+    optimizer_method = "SGD"
+    # model store
+    model_export_file = "/res/model.vec.tf"
+    # store model's parameters
+    model_parameters_file = "/res/embedding.json"
+
+    # prepare for train and test
+    print('The toolkit is importing datasets.')
+
+    with open(dataset_path + 'relation2id.txt', 'r', encoding='utf8') as file:
+        print('The total of relations is', int(file.readline()))
+
+    with open(dataset_path + 'entity2id.txt', 'r', encoding='utf8') as file:
+        print('The total of entities is', int(file.readline()))
+
+    train_list = []
+    with open(dataset_path + 'train2id.txt', 'r', encoding='utf8') as file:
+        train_total = int(file.readline())
+        for line in file.readlines():
+            temp_list = line.strip().split()
+            for index in range(len(temp_list)):
+                temp_list[index] = int(temp_list[index])
+            train_list.append(temp_list)
+
+    train_list = compare_head(train_list)
+
+    for item in train_list:
+        print(item)
